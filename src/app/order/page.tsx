@@ -1,16 +1,107 @@
-export default function OrderPage() {
-    return (
-        <div className="min-h-screen bg-paper-grain py-16">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h1 className="text-4xl md:text-6xl font-serif font-bold text-charcoal mb-6">
-                    Order Now
-                </h1>
-                <p className="text-lg text-charcoal/80 mb-12 max-w-2xl">
-                    Ready to start your letterpress project? Let's get started.
-                </p>
+"use client"
 
-                <div className="bg-off-white/80 backdrop-blur-sm border-2 border-charcoal/20 rounded-lg p-12">
-                    <p className="text-charcoal/60">Order form coming soon...</p>
+import { useState } from "react"
+import { OrderConfiguration } from "@/types/order"
+import { PaperSelector } from "@/components/order/paper-selector"
+import { SpecControl } from "@/components/order/spec-control"
+import { OrderSummary } from "@/components/order/order-summary"
+import { FileUploader } from "@/components/order/file-uploader"
+import { Button } from "@/components/ui/button"
+import { useOrderPrice } from "@/hooks/use-order-price"
+
+export default function OrderPage() {
+    const [config, setConfig] = useState<OrderConfiguration>({
+        productType: "Business Card",
+        quantity: 250,
+        paperType: "Cotton 110lb",
+        inkColors: 1,
+        foilColors: 0,
+        edgePainting: false,
+        uploadedFile: null,
+    })
+
+    const updateConfig = (updates: Partial<OrderConfiguration>) => {
+        setConfig((prev) => {
+            const newConfig = { ...prev, ...updates }
+
+            // Reset edge painting if paper is not double thick
+            if (updates.paperType === "Cotton 110lb") {
+                newConfig.edgePainting = false
+            }
+
+            return newConfig
+        })
+    }
+
+    const { subtotal } = useOrderPrice(config)
+
+    return (
+        <div className="min-h-screen bg-paper-grain pb-32 lg:pb-16">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                    {/* Left Column - Builder */}
+                    <div className="lg:col-span-2 space-y-12">
+                        <div>
+                            <h1 className="text-4xl md:text-5xl font-serif font-bold text-charcoal mb-6">
+                                Build your Order
+                            </h1>
+                            <p className="text-lg text-charcoal/80">
+                                Customize your letterpress stationery with our premium options.
+                            </p>
+                        </div>
+
+                        <section className="space-y-6">
+                            <h2 className="text-2xl font-serif font-bold text-charcoal">
+                                1. Select Paper
+                            </h2>
+                            <PaperSelector
+                                selected={config.paperType}
+                                onChange={(type) => updateConfig({ paperType: type })}
+                            />
+                        </section>
+
+                        <section className="space-y-6">
+                            <h2 className="text-2xl font-serif font-bold text-charcoal">
+                                2. Specifications
+                            </h2>
+                            <SpecControl
+                                config={config}
+                                onChange={updateConfig}
+                            />
+                        </section>
+
+                        <section className="space-y-6">
+                            <h2 className="text-2xl font-serif font-bold text-charcoal">
+                                3. Upload Artwork
+                            </h2>
+                            <FileUploader
+                                selectedFile={config.uploadedFile}
+                                onFileSelect={(file) => updateConfig({ uploadedFile: file })}
+                            />
+                        </section>
+                    </div>
+
+                    {/* Right Column - Summary (Desktop) */}
+                    <div className="hidden lg:block lg:col-span-1">
+                        <OrderSummary config={config} />
+                    </div>
+                </div>
+            </div>
+
+            {/* Mobile Fixed Summary Bar */}
+            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-charcoal/10 p-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] lg:hidden z-50">
+                <div className="flex items-center justify-between max-w-7xl mx-auto">
+                    <div>
+                        <p className="text-xs text-charcoal/60 uppercase tracking-wider">
+                            Total
+                        </p>
+                        <p className="text-2xl font-serif font-bold text-charcoal">
+                            ${subtotal.toFixed(2)}
+                        </p>
+                    </div>
+                    <Button className="bg-gold hover:bg-gold/90 text-white shadow-md">
+                        Checkout
+                    </Button>
                 </div>
             </div>
         </div>

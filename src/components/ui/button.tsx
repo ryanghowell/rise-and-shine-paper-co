@@ -5,7 +5,7 @@ import { motion, HTMLMotionProps } from "framer-motion"
 import { cn } from "@/lib/utils"
 
 interface ButtonProps extends Omit<HTMLMotionProps<"button">, "ref"> {
-    variant?: "primary" | "secondary" | "outline"
+    variant?: "primary" | "secondary" | "outline" | "ghost"
     asChild?: boolean
 }
 
@@ -15,6 +15,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             primary: "bg-charcoal text-off-white border-2 border-charcoal hover:bg-charcoal/90",
             secondary: "bg-gold text-charcoal border-2 border-gold hover:bg-gold/90",
             outline: "bg-transparent text-charcoal border-2 border-charcoal hover:bg-charcoal/5",
+            ghost: "bg-transparent text-charcoal border-2 border-transparent hover:bg-charcoal/5 shadow-none active:shadow-none",
         }
 
         const classes = cn(
