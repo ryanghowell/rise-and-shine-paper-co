@@ -7,6 +7,7 @@ import { calculateEnvelopePrice } from "@/lib/pricing-engine"
 import { useCart } from "@/contexts/cart-context"
 import { QuantitySelector } from "@/components/order/quantity-selector"
 import { OrderTypeNav } from "@/components/order/order-type-nav"
+import { MobileEnvelopeBar } from "@/components/order/mobile-envelope-bar"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { ShoppingCart, Check } from "lucide-react"
@@ -342,34 +343,7 @@ export default function EnvelopesPage() {
             </div>
 
             {/* Mobile Fixed Summary Bar */}
-            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-charcoal/10 p-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] lg:hidden z-50">
-                <div className="flex items-center justify-between max-w-7xl mx-auto">
-                    <div>
-                        <p className="text-xs text-charcoal/60 uppercase tracking-wider">
-                            Total
-                        </p>
-                        <p className="text-2xl font-serif font-bold text-charcoal">
-                            ${price.toFixed(2)}
-                        </p>
-                    </div>
-                    <Button
-                        onClick={handleAddToCart}
-                        className="bg-gold hover:bg-gold/90 text-white shadow-md"
-                    >
-                        {justAdded ? (
-                            <>
-                                <Check className="w-5 h-5 mr-2" />
-                                Added!
-                            </>
-                        ) : (
-                            <>
-                                <ShoppingCart className="w-5 h-5 mr-2" />
-                                Add to Cart
-                            </>
-                        )}
-                    </Button>
-                </div>
-            </div>
+            <MobileEnvelopeBar config={config} />
         </div>
     )
 }

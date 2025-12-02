@@ -7,7 +7,7 @@ import { SpecControl } from "@/components/order/spec-control"
 import { OrderSummary } from "@/components/order/order-summary"
 import { FileUploader } from "@/components/order/file-uploader"
 import { OrderTypeNav } from "@/components/order/order-type-nav"
-import { Button } from "@/components/ui/button"
+import { MobileOrderBar } from "@/components/order/mobile-order-bar"
 import { useOrderPrice } from "@/hooks/use-order-price"
 
 export default function OrderPage() {
@@ -109,21 +109,7 @@ export default function OrderPage() {
             </div>
 
             {/* Mobile Fixed Summary Bar */}
-            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-charcoal/10 p-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] lg:hidden z-50">
-                <div className="flex items-center justify-between max-w-7xl mx-auto">
-                    <div>
-                        <p className="text-xs text-charcoal/60 uppercase tracking-wider">
-                            Total
-                        </p>
-                        <p className="text-2xl font-serif font-bold text-charcoal">
-                            ${subtotal.toFixed(2)}
-                        </p>
-                    </div>
-                    <Button className="bg-gold hover:bg-gold/90 text-white shadow-md">
-                        Checkout
-                    </Button>
-                </div>
-            </div>
+            <MobileOrderBar config={config} />
         </div>
     )
 }
