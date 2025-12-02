@@ -6,17 +6,36 @@ import { PaperSelector } from "@/components/order/paper-selector"
 import { SpecControl } from "@/components/order/spec-control"
 import { OrderSummary } from "@/components/order/order-summary"
 import { FileUploader } from "@/components/order/file-uploader"
+import { OrderTypeNav } from "@/components/order/order-type-nav"
 import { Button } from "@/components/ui/button"
 import { useOrderPrice } from "@/hooks/use-order-price"
 
 export default function OrderPage() {
     const [config, setConfig] = useState<OrderConfiguration>({
-        productType: "Business Card",
         quantity: 250,
-        paperType: "Cotton 110lb",
-        inkColors: 1,
-        foilColors: 0,
-        edgePainting: false,
+        size: 'a7', // Default to A7 (5x7)
+        paper: 'lettra_pearl',
+        paperWeight: 110,
+
+        // Front Specs
+        inkColorsFront: 1,
+        foilColorsFront: 0,
+        digitalPrintingFront: false,
+        blindDebossFront: false,
+        blindEmbossFront: false,
+
+        // Back Specs
+        inkColorsBack: 0,
+        foilColorsBack: 0,
+        digitalPrintingBack: false,
+        blindDebossBack: false,
+        blindEmbossBack: false,
+
+        // Finishing
+        edgePaint: false,
+        dieCut: 'none',
+
+        // File
         uploadedFile: null,
     })
 
@@ -24,9 +43,9 @@ export default function OrderPage() {
         setConfig((prev) => {
             const newConfig = { ...prev, ...updates }
 
-            // Reset edge painting if paper is not double thick
-            if (updates.paperType === "Cotton 110lb") {
-                newConfig.edgePainting = false
+            // Reset edge painting if paper is not double thick (220lb)
+            if (updates.paperWeight === 110) {
+                newConfig.edgePaint = false
             }
 
             return newConfig
@@ -37,6 +56,7 @@ export default function OrderPage() {
 
     return (
         <div className="min-h-screen bg-paper-grain pb-32 lg:pb-16">
+            <OrderTypeNav />
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                     {/* Left Column - Builder */}
@@ -55,8 +75,8 @@ export default function OrderPage() {
                                 1. Select Paper
                             </h2>
                             <PaperSelector
-                                selected={config.paperType}
-                                onChange={(type) => updateConfig({ paperType: type })}
+                                selectedWeight={config.paperWeight}
+                                onChange={(weight) => updateConfig({ paperWeight: weight })}
                             />
                         </section>
 

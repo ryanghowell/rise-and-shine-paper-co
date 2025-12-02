@@ -1,13 +1,48 @@
-export type ProductType = 'Business Card' | 'Note Card' | 'Invite';
-export type PaperType = 'Cotton 110lb' | 'Cotton 220lb (Double Thick)';
-export type Quantity = 50 | 100 | 250 | 500 | 1000 | 2500;
+import { PaperKey, PaperWeight, SizeKey, EnvelopeSizeKey } from "@/lib/pricing-config";
+
+// Re-export types that are needed elsewhere but not exported from pricing-config
+export type DieCutType = 'none' | 'stock' | 'custom';
+export type EnvelopeType = 'single' | 'double';
+export type ReturnAddressPrinting = 'none' | 'letterpress' | 'foil' | 'digital';
+
+export type { PaperKey, PaperWeight, SizeKey, EnvelopeSizeKey };
 
 export interface OrderConfiguration {
-    productType: ProductType;
-    quantity: Quantity;
-    paperType: PaperType;
-    inkColors: number; // 0-3
-    foilColors: number; // 0-2
-    edgePainting: boolean;
+    quantity: number;
+    size: SizeKey;
+    paper: PaperKey;
+    paperWeight: PaperWeight;
+
+    // Front Specs
+    inkColorsFront: number;
+    foilColorsFront: number;
+    digitalPrintingFront: boolean;
+    blindDebossFront: boolean;
+    blindEmbossFront: boolean;
+
+    // Back Specs
+    inkColorsBack: number;
+    foilColorsBack: number;
+    digitalPrintingBack: boolean;
+    blindDebossBack: boolean;
+    blindEmbossBack: boolean;
+
+    // Finishing
+    edgePaint: boolean;
+    dieCut: DieCutType;
+
+    // File
     uploadedFile: File | null;
+}
+
+export interface EnvelopeConfiguration {
+    quantity: number;
+    size: EnvelopeSizeKey;
+    type: EnvelopeType;
+    returnAddressPrinting: ReturnAddressPrinting;
+    returnAddressLocation: 'front' | 'back';
+    guestAddressing: boolean;
+    innerGuestAddressing: boolean;
+    liner: boolean;
+    linerAssembly: boolean;
 }

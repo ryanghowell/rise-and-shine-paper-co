@@ -1,58 +1,38 @@
 import { useMemo } from 'react';
 import { OrderConfiguration } from '@/types/order';
+import { calculateCardPrice } from '@/lib/pricing-engine';
 
 export function useOrderPrice(config: OrderConfiguration) {
     return useMemo(() => {
-        // Pricing Constants
-        const BASE_SETUP_FEE = 150;
-        const PAPER_COST_110LB = 0.50; // Per unit
-        const INK_RUN_FEE = 40; // Per color setup
-        const INK_UNIT_COST = 0.10; // Per color per unit
-        const FOIL_RUN_FEE = 80; // Per color setup
-        const FOIL_UNIT_COST = 0.30; // Per color per unit
-        const EDGE_PAINTING_FEE = 75; // Flat fee
+        const calculatedPrice = calculateCardPrice(config);
 
-        let subtotal = BASE_SETUP_FEE;
+        const pricePerUnit = config.quantity > 0 ? calculatedPrice.total / config.quantity : 0;
 
-        // Paper Cost
-        let paperUnitCost = PAPER_COST_110LB;
-        if (config.paperType === 'Cotton 220lb (Double Thick)') {
-            paperUnitCost *= 2;
-        }
-        subtotal += paperUnitCost * config.quantity;
-
-        // Ink Costs
-        if (config.inkColors > 0) {
-            subtotal += (INK_RUN_FEE * config.inkColors);
-            subtotal += (INK_UNIT_COST * config.inkColors * config.quantity);
-        }
-
-        // Foil Costs
-        if (config.foilColors > 0) {
-            subtotal += (FOIL_RUN_FEE * config.foilColors);
-            subtotal += (FOIL_UNIT_COST * config.foilColors * config.quantity);
-        }
-
-        // Edge Painting
-        if (config.edgePainting) {
-            subtotal += EDGE_PAINTING_FEE;
-        }
-
-        const pricePerUnit = subtotal / config.quantity;
-
-        // Turnaround Time Logic
+        // Turnaround Time Logic (Approximation based on complexity)
         // Base: 10 business days
-        // +2 days per ink color > 1
-        // +3 days per foil color
-        // +3 days for edge painting
         let businessDays = 10;
-        if (config.inkColors > 1) businessDays += (config.inkColors - 1) * 2;
-        if (config.foilColors > 0) businessDays += config.foilColors * 3;
-        if (config.edgePainting) businessDays += 3;
+
+        // Add time for multiple ink colors
+        const totalInk = config.inkColorsFront + config.inkColorsBack;
+        if (totalInk > 1) businessDays += (totalInk - 1) * 2;
+
+        // Add time for foil
+        const totalFoil = config.foilColorsFront + config.foilColorsBack;
+        if (totalFoil > 0) businessDays += totalFoil * 3;
+
+        // Add time for edge painting
+        if (config.edgePaint) businessDays += 3;
+
+        // Add time for digital printing
+        if (config.digitalPrintingFront || config.digitalPrintingBack) businessDays += 2;
+
+        // Add time for die cutting
+        if (config.dieCut !== 'none') businessDays += 3;
 
         return {
             pricePerUnit,
-            subtotal,
+            subtotal: calculatedPrice.total,
+            breakdown: calculatedPrice,
             turnaroundTime: `${businessDays} Business Days`
         };
     }, [config]);
